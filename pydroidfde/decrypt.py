@@ -31,7 +31,8 @@ from fde import *
 def decrypt(encrypted_partition, sector_start, decrypted_key, outfile, debug=True):
 
   # Check encrypted partition size is a multiple of sector size and open file
-  fileSize = path.getsize(encrypted_partition)
+  if fileSize == 0:
+    fileSize = path.getsize(encrypted_partition)
   assert(fileSize % SECTOR_SIZE == 0)
   nb_sectors = fileSize / SECTOR_SIZE
   fd = open(encrypted_partition, 'rb')
@@ -94,13 +95,16 @@ def main():
   parser.add_argument('outfile', help='The filename to save the decrypted partition')
   parser.add_argument('-p', "--password", help='Provided password. Default is "0000"', default='0000')
   parser.add_argument('-s', "--sector", help='Sector number for the first bytes in the encrypted_partition file. It allows to decrypt data dumped at a particular offset. Default is 0', default=0, type=int)
+  parser.add_argument('-S', "--size", help='Size of the partition (default is 0, required for block device)', default=0, type=int)
   args = parser.parse_args()
 
   outfile = args.outfile
   header_file = args.header_file
   encrypted_partition = args.encrypted_partition
+  fileSize = args.size
   assert path.isfile(header_file), "Header file '%s' not found." % header_file
-  assert path.isfile(encrypted_partition), "Encrypted partition '%s' not found." % encrypted_partition
+  if fileSize == 0:
+    assert path.isfile(encrypted_partition), "Encrypted partition '%s' not found." % encrypted_partition
   password = args.password
   sector_start = args.sector
 
@@ -111,7 +115,7 @@ def main():
   decrypted_key = get_decrypted_key(encrypted_key, salt, password)
 
   # Loop on sectors
-  decrypt(encrypted_partition, sector_start, decrypted_key, outfile, debug=False)
+  decrypt(encrypted_partition, sector_start, decrypted_key, outfile, debug=False, fileSize=fileSize)
 
   print 'Decrypted partition written to: %s' % outfile
   print 'Done.'
