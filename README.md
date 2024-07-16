@@ -4,6 +4,8 @@ Tools to work on Android Full Disk Encryption (FDE).
 
 It can be used on an encrypted data.img, over USB from recovery mode and over fastboot using a "fastboot oem read_mmc" command.
 
+**NOTE**: Android switched from FDE to FBE (file-based encryption) starting from version 10. **This will work only until Android 9 (Pie)!**
+
 ## Disclaimer
 
 The Full Disk Encryption tools are heavily based on Thomas Cannon tools and support HTC One, Wiko WAX (including the Blackphone). See below.
